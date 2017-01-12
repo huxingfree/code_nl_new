@@ -23,6 +23,7 @@ import random
 
 import numpy as np
 import tensorflow as tf
+import encoders
 
 from tensorflow.models.rnn.translate import data_utils
 
@@ -125,16 +126,11 @@ class Seq2SeqModel(object):
 
         # The seq2seq function: we use embedding for the input and attention.
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-            return tf.nn.seq2seq.embedding_attention_seq2seq(
-                encoder_inputs,
-                decoder_inputs,
-                cell,
-                num_encoder_symbols=source_vocab_size,
-                num_decoder_symbols=target_vocab_size,
-                embedding_size=size,
-                output_projection=output_projection,
-                feed_previous=do_decode,
-                dtype=dtype)
+            b_size = tf.array_ops.shape(encoder_inputs[0])[0]
+            # encode source
+            context, decoder_initial_state, attention_states = self.encode(encoder_inputs, b_size)
+
+            #############################
 
         # Feeds for inputs.
         self.encoder_inputs = []
@@ -188,6 +184,24 @@ class Seq2SeqModel(object):
                     zip(clipped_gradients, params), global_step=self.global_step))
 
         self.saver = tf.train.Saver(tf.global_variables())
+
+    def encode(self, encoder_inputs, batch_size, translate=False):
+        with tf.name_scope('reverse_encoder') as scope:
+            if translate:
+                scope.reuse_variables()
+            context, decoder_initial_state = encoders.reverse_encoder(encoder_inputs, self.src_embedding,
+                                                                      self.encoder_cell,
+                                                                      batch_size, dropout=self.dropout_feed,
+                                                                      dtype=self.dtype)
+            # First calculate a concatenation of encoder outputs to put attention on.
+            top_states = [
+                tf.reshape(e, [-1, 1, self.encoder_size]) for e in context
+                ]
+            attention_states = tf.concat(1, top_states)
+
+        return context, decoder_initial_state, attention_states
+
+    def decoder(self):
 
     def step(self, session, encoder_inputs, decoder_inputs, target_weights,
              bucket_id, forward_only):
