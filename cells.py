@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import tensorflow as tf
 from tensorflow.models.rnn import rnn_cell
 from tensorflow.models.rnn import rnn
+from tensorflow.models.rnn.rnn_cell import RNNCell
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import init_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import nn_ops
 from tensorflow.python.ops import variable_scope as vs
 
-RNNCell = tf.nn.rnn_cell.RNNCell
-
 
 def _reverse_seq(input_seq, lengths):
     """Reverse a list of Tensors up to specified lengths.
+
     Args:
       input_seq: Sequence of seq_len tensors of dimension (batch_size, depth)
       lengths:   A tensor of dimension batch_size, containing lengths for each
                  sequence in the batch. If "None" is specified, simply reverses
                  the list.
+
     Returns:
       time-reversed sequence
     """
@@ -113,7 +110,9 @@ class DropoutWrapperCond(RNNCell):
     def __init__(self, cell, input_keep_prob=1.0, output_keep_prob=1.0,
                  seed=None):
         """Create a cell with added input and/or output dropout.
+
         Dropout is never used on the state.
+
         Args:
           cell: an RNNCell, a projection to output_size is added to it.
           input_keep_prob: unit Tensor or float between 0 and 1, input keep
@@ -121,6 +120,7 @@ class DropoutWrapperCond(RNNCell):
           output_keep_prob: unit Tensor or float between 0 and 1, output keep
             probability; if it is float and 1, no output dropout will be added.
           seed: (optional) integer, the randomness seed.
+
         Raises:
           TypeError: if cell is not an RNNCell.
           ValueError: if keep_prob is not between 0 and 1.
@@ -166,6 +166,7 @@ class DropoutWrapperCond(RNNCell):
 
 def linear(args, output_size, bias, bias_start=0.0, initializer=None, scope=None):
     """Linear map: sum_i(args[i] * W[i]), where W[i] is a variable.
+
     Args:
       args: a 2D Tensor or a list of 2D, batch x n, Tensors.
       output_size: int, second dimension of W[i].
@@ -173,9 +174,11 @@ def linear(args, output_size, bias, bias_start=0.0, initializer=None, scope=None
       bias_start: starting value to initialize the bias; 0 by default.
       initializer: weight initializer. If None, random_uniform_initializer will be used.
       scope: VariableScope for the created subgraph; defaults to "Linear".
+
     Returns:
       A 2D Tensor with shape [batch x output_size] equal to
       sum_i(args[i] * W[i]), where W[i]s are newly created matrices.
+
     Raises:
       ValueError: if some of the arguments has unspecified or wrong shape.
     """
@@ -276,7 +279,7 @@ def bidirectional_rnn(cell_fw, cell_bw, inputs,
     return (outputs, output_state_fw, output_state_bw)
 
 
-def build_multicell_rnn(num_layers_encoder, num_layers_decoder, encoder_size, decoder_size,
+def build_nmt_multicell_rnn(num_layers_encoder, num_layers_decoder, encoder_size, decoder_size,
                             source_proj_size, use_lstm=True, input_feeding=True,
                             dropout=0.0):
 
@@ -313,7 +316,7 @@ def build_multicell_rnn(num_layers_encoder, num_layers_decoder, encoder_size, de
         return encoder_rnncell, decoder_rnncell
 
 
-def build_bidirectional_cell(encoder_size, decoder_size, source_proj_size, target_proj_size, dropout=0.0):
+def build_nmt_bidirectional_cell(encoder_size, decoder_size, source_proj_size, target_proj_size, dropout=0.0):
 
         initializer = tf.random_uniform_initializer(minval=-0.1, maxval=0.1, seed=1234)
 

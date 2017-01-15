@@ -26,6 +26,7 @@ def hybrid_attention(decoder_hidden_state, hidden_attn, initializer, window_size
                      content_function=vinyals_kaiser, dtype=tf.float32):
     """Put hybrid attention (mix of global and local attention) on hidden using decoder hidden states
     and the hidden states of encoder (hidden_attn).
+
         Parameters
         ----------
         decoder_hidden_state : 2-D Tensor
@@ -45,11 +46,13 @@ def hybrid_attention(decoder_hidden_state, hidden_attn, initializer, window_size
             weights. Default to 'vinyals_kaiser'.
         dtype : tensorflow dtype
             Type of tensors. Default to tf.float32
+
         Returns
         -------
         ds : 2-D Tensor
             Tensor representing the context vector generated after scoring the encoder and decoder hidden
             states. Has shape (?, decoder_size), i.e., one context vector per batch sample.
+
     """
     assert content_function is not None
 
@@ -86,6 +89,7 @@ def global_attention(decoder_hidden_state, hidden_attn, initializer, window_size
                      content_function=vinyals_kaiser, dtype=tf.float32):
 
     """Put global attention on hidden using decoder hidden states and the hidden states of encoder (hidden_attn).
+
     Parameters
     ----------
     decoder_hidden_state : 2-D Tensor
@@ -105,11 +109,13 @@ def global_attention(decoder_hidden_state, hidden_attn, initializer, window_size
         weights. Default to 'vinyals_kaiser'.
     dtype : tensorflow dtype
         Type of tensors. Default to tf.float32
+
     Returns
     -------
     ds : 2-D Tensor
         Tensor representing the context vector generated after scoring the encoder and decoder hidden
         states. Has shape (?, decoder_size), i.e., one context vector per batch sample.
+
     """
     assert content_function is not None
 
@@ -137,6 +143,7 @@ def global_attention(decoder_hidden_state, hidden_attn, initializer, window_size
 def local_attention(decoder_hidden_state, hidden_attn, initializer, window_size=10,
                     content_function=vinyals_kaiser, dtype=tf.float32):
     """Put local attention on hidden using decoder hidden states and the hidden states of encoder (hidden_attn).
+
     Parameters
     ----------
     decoder_hidden_state : 2-D Tensor
@@ -156,11 +163,13 @@ def local_attention(decoder_hidden_state, hidden_attn, initializer, window_size=
         weights. Default to 'vinyals_kaiser'.
     dtype : tensorflow dtype
         Type of tensors. Default to tf.float32
+
     Returns
     -------
     ds : 2-D Tensor
         Tensor representing the context vector generated after scoring the encoder and decoder hidden
         states. Has shape (?, decoder_size), i.e., one context vector per batch sample.
+
     """
     assert content_function is not None
     sigma = window_size / 2

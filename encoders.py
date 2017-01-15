@@ -11,6 +11,7 @@ import cells
 def reverse_encoder(source, src_embedding, encoder_cell, batch_size,
                     dropout=None, dtype=tf.float32):
     """
+
     Parameters
     ----------
     source
@@ -18,8 +19,10 @@ def reverse_encoder(source, src_embedding, encoder_cell, batch_size,
     encoder_cell
     batch_size
     dtype
+
     Returns
     -------
+
     """
     # get the embeddings
     with ops.device("/cpu:0"):
@@ -54,6 +57,7 @@ def reverse_encoder(source, src_embedding, encoder_cell, batch_size,
 def bidirectional_encoder(source, src_embedding, encoder_cell_fw, encoder_cell_bw,
                           dropout=None, dtype=tf.float32):
     """
+
     Parameters
     ----------
     source
@@ -61,11 +65,14 @@ def bidirectional_encoder(source, src_embedding, encoder_cell_fw, encoder_cell_b
     encoder_cell
     batch_size
     dtype
+
     Returns
     -------
+
     """
     # get the embeddings
-    emb_inp = [embedding_ops.embedding_lookup(src_embedding, s) for s in source]
+    with ops.device("/cpu:0"):
+        emb_inp = [embedding_ops.embedding_lookup(src_embedding, s) for s in source]
 
     if dropout is not None:
 

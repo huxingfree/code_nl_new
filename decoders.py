@@ -14,7 +14,6 @@ from content_functions import decoder_type_2, vinyals_kaiser, mod_bahdanau
 
 _SEED = 1234
 
-
 def _embed_inputs(decoder_inputs, num_symbols, input_size, input_feeding=False):
 
     with ops.device("/cpu:0"):
@@ -36,26 +35,35 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell, num
                       dropout=None, initializer=None, decoder_states=None, step_num=None,
                       dtype=tf.float32, scope=None):
     """
+
     Helper function implementing a RNN decoder with global, local or hybrid attention for the sequence-to-sequence
         model.
+
     Parameters
     ----------
+
     decoder_inputs: list
             a list of 2D Tensors [batch_size x cell.input_size].
+
     initial_state: tensor
             2d Tensor [batch_size x (number of decoder layers * hidden_layer_size * 2)] if LSTM or
             [batch_size x (number of decoder layers * hidden_layer_size)] if GRU representing the initial
                 state (usually, we take the states of the encoder) to be used when running the decoder. The '2' on
                 the LSTM formula mean that we have to set the hidden state and the cell state.
+
     attention_states: tensor
             3D tensor [batch_size x attn_length (time) x attn_size (hidden_layer_size)] representing the encoder
                 hidden states that will be used to derive the context (attention) vector.
+
     cell: RNNCell
             rnn_cell.RNNCell defining the cell function and size.
+
     batch_size: tensor
             tensor representing the batch size used when training the model
+
     attention_f: function
             function indicating which type of attention to use. Default to global_attention.
+
     loop_function:
             if not None, this function will be applied to i-th output
                 in order to generate i+1-th input, and decoder_inputs will be ignored,
@@ -65,18 +73,25 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell, num
                 * prev is a 2D Tensor of shape [batch_size x cell.output_size],
                 * i is an integer, the step number (when advanced control is needed),
                 * next is a 2D Tensor of shape [batch_size x cell.input_size].
+
     window_size: int
             size of the window to apply on local attention.Default to 10.
+
     input_feeding : boolean
             Flag indicating where to use the "input feeding approach" proposed by Luong et al. (2015).
                 Default to False.
+
     content_function: string
+
     dtype:
             The dtype to use for the RNN initial state (default: tf.float32).
+
     scope:
             VariableScope for the created subgraph; default: "attention_decoder".
+
     Returns
     -------
+
     outputs:
             A list of the same length as decoder_inputs of 2D Tensors of shape
                 [batch_size x output_size]. These represent the generated outputs.
@@ -88,10 +103,12 @@ def attention_decoder(decoder_inputs, initial_state, attention_states, cell, num
                     new_attn = softmax(V^T * tanh(W * attention_states + U * new_state))
                 and then we calculate the output:
                     output = linear(cell_output, new_attn).
+
     states:
             The state of each decoder cell in each time-step. This is a list
                 with length len(decoder_inputs) -- one item for each time-step.
                 Each item is a 2D Tensor of shape [batch_size x cell.state_size].
+
     """
     assert attention_f is not None
 
@@ -177,26 +194,35 @@ def attention_decoder_informed(decoder_inputs, initial_state, attention_states, 
                                dropout=None, initializer=None, decoder_states=None, step_num=None,
                                dtype=tf.float32, scope=None):
     """
+
     Helper function implementing a RNN decoder with global, local or hybrid attention for the sequence-to-sequence
         model.
+
     Parameters
     ----------
+
     decoder_inputs: list
             a list of 2D Tensors [batch_size x cell.input_size].
+
     initial_state: tensor
             2d Tensor [batch_size x (number of decoder layers * hidden_layer_size * 2)] if LSTM or
             [batch_size x (number of decoder layers * hidden_layer_size)] if GRU representing the initial
                 state (usually, we take the states of the encoder) to be used when running the decoder. The '2' on
                 the LSTM formula mean that we have to set the hidden state and the cell state.
+
     attention_states: tensor
             3D tensor [batch_size x attn_length (time) x attn_size (hidden_layer_size)] representing the encoder
                 hidden states that will be used to derive the context (attention) vector.
+
     cell: RNNCell
             rnn_cell.RNNCell defining the cell function and size.
+
     batch_size: tensor
             tensor representing the batch size used when training the model
+
     attention_f: function
             function indicating which type of attention to use. Default to global_attention.
+
     loop_function:
             if not None, this function will be applied to i-th output
                 in order to generate i+1-th input, and decoder_inputs will be ignored,
@@ -206,18 +232,25 @@ def attention_decoder_informed(decoder_inputs, initial_state, attention_states, 
                 * prev is a 2D Tensor of shape [batch_size x cell.output_size],
                 * i is an integer, the step number (when advanced control is needed),
                 * next is a 2D Tensor of shape [batch_size x cell.input_size].
+
     window_size: int
             size of the window to apply on local attention.Default to 10.
+
     input_feeding : boolean
             Flag indicating where to use the "input feeding approach" proposed by Luong et al. (2015).
                 Default to False.
+
     content_function: string
+
     dtype:
             The dtype to use for the RNN initial state (default: tf.float32).
+
     scope:
             VariableScope for the created subgraph; default: "attention_decoder".
+
     Returns
     -------
+
     outputs:
             A list of the same length as decoder_inputs of 2D Tensors of shape
                 [batch_size x output_size]. These represent the generated outputs.
@@ -229,10 +262,12 @@ def attention_decoder_informed(decoder_inputs, initial_state, attention_states, 
                     new_attn = softmax(V^T * tanh(W * attention_states + U * new_state))
                 and then we calculate the output:
                     output = linear(cell_output, new_attn).
+
     states:
             The state of each decoder cell in each time-step. This is a list
                 with length len(decoder_inputs) -- one item for each time-step.
                 Each item is a 2D Tensor of shape [batch_size x cell.state_size].
+
     """
     assert attention_f is not None
 
@@ -325,23 +360,33 @@ def attention_decoder_output(decoder_inputs, initial_state, attention_states, ce
                              dropout=None, initializer=None, decoder_states=None, step_num=None,
                              dtype=tf.float32, scope=None):
     """
+
     Helper function implementing a RNN decoder with global, local or hybrid attention for the sequence-to-sequence
         model.
+
     Parameters
     ----------
+
     decoder_inputs: list
             a list of 2D Tensors [batch_size x cell.input_size].
+
     initial_state: tensor
             3D Tensor [batch_size x attn_length x attn_size].
+
     attention_states:
+
     cell: RNNCell
             rnn_cell.RNNCell defining the cell function and size.
+
     batch_size: int
             batch size when training the model
+
     attention_f: function
             function indicating which type of attention to use. Default to global_attention.
+
     output_size: int
             size of the output vectors; if None, we use cell.output_size.
+
     loop_function:
             if not None, this function will be applied to i-th output
                 in order to generate i+1-th input, and decoder_inputs will be ignored,
@@ -351,17 +396,24 @@ def attention_decoder_output(decoder_inputs, initial_state, attention_states, ce
                 * prev is a 2D Tensor of shape [batch_size x cell.output_size],
                 * i is an integer, the step number (when advanced control is needed),
                 * next is a 2D Tensor of shape [batch_size x cell.input_size].
+
     window_size: int
             size of the window to apply on local attention
+
     input_feeding: boolean
             whether or not to use the input feeding approach by Luong et al., 2015.
+
     content_function: string
+
     dtype:
             The dtype to use for the RNN initial state (default: tf.float32).
+
     scope:
             VariableScope for the created subgraph; default: "attention_decoder".
+
     Returns
     -------
+
     outputs:
             A list of the same length as decoder_inputs of 2D Tensors of shape
                 [batch_size x output_size]. These represent the generated outputs.
@@ -373,10 +425,12 @@ def attention_decoder_output(decoder_inputs, initial_state, attention_states, ce
                     new_attn = softmax(V^T * tanh(W * attention_states + U * new_state))
                 and then we calculate the output:
                     output = linear(cell_output, new_attn).
+
     states:
             The state of each decoder cell in each time-step. This is a list
                 with length len(decoder_inputs) -- one item for each time-step.
                 Each item is a 2D Tensor of shape [batch_size x cell.state_size].
+
     """
     assert attention_f is not None
 
@@ -501,12 +555,15 @@ def attention_decoder_output(decoder_inputs, initial_state, attention_states, ce
 
 def decoder_output_attention(decoder_hidden, attn_size, decoder_attention_f, initializer=None, step_num=None):
     """
+
     Parameters
     ----------
     decoder_states
     attn_size
+
     Returns
     -------
+
     """
     assert initializer is not None
 
@@ -545,23 +602,33 @@ def attention_decoder_output_informed(decoder_inputs, initial_state, attention_s
                                       dropout=None, initializer=None, decoder_states=None, step_num=None,
                                       dtype=tf.float32, scope=None):
     """
+
     Helper function implementing a RNN decoder with global, local or hybrid attention for the sequence-to-sequence
         model.
+
     Parameters
     ----------
+
     decoder_inputs: list
             a list of 2D Tensors [batch_size x cell.input_size].
+
     initial_state: tensor
             3D Tensor [batch_size x attn_length x attn_size].
+
     attention_states:
+
     cell: RNNCell
             rnn_cell.RNNCell defining the cell function and size.
+
     batch_size: int
             batch size when training the model
+
     attention_f: function
             function indicating which type of attention to use. Default to global_attention.
+
     output_size: int
             size of the output vectors; if None, we use cell.output_size.
+
     loop_function:
             if not None, this function will be applied to i-th output
                 in order to generate i+1-th input, and decoder_inputs will be ignored,
@@ -571,17 +638,24 @@ def attention_decoder_output_informed(decoder_inputs, initial_state, attention_s
                 * prev is a 2D Tensor of shape [batch_size x cell.output_size],
                 * i is an integer, the step number (when advanced control is needed),
                 * next is a 2D Tensor of shape [batch_size x cell.input_size].
+
     window_size: int
             size of the window to apply on local attention
+
     input_feeding: boolean
             whether or not to use the input feeding approach by Luong et al., 2015.
+
     content_function: string
+
     dtype:
             The dtype to use for the RNN initial state (default: tf.float32).
+
     scope:
             VariableScope for the created subgraph; default: "attention_decoder".
+
     Returns
     -------
+
     outputs:
             A list of the same length as decoder_inputs of 2D Tensors of shape
                 [batch_size x output_size]. These represent the generated outputs.
@@ -593,10 +667,12 @@ def attention_decoder_output_informed(decoder_inputs, initial_state, attention_s
                     new_attn = softmax(V^T * tanh(W * attention_states + U * new_state))
                 and then we calculate the output:
                     output = linear(cell_output, new_attn).
+
     states:
             The state of each decoder cell in each time-step. This is a list
                 with length len(decoder_inputs) -- one item for each time-step.
                 Each item is a 2D Tensor of shape [batch_size x cell.state_size].
+
     """
     assert attention_f is not None
 
@@ -736,26 +812,35 @@ def attention_decoder_nmt(decoder_inputs, initial_state, attention_states, cell,
                           decoder_attention_f=decoder_type_2, combine_inp_attn=False, input_feeding=False,
                           dropout=None, initializer=None, dtype=tf.float32, scope=None):
     """
+
     Helper function implementing a RNN decoder with global, local or hybrid attention for the sequence-to-sequence
         model.
+
     Parameters
     ----------
+
     decoder_inputs: list
             a list of 2D Tensors [batch_size x cell.input_size].
+
     initial_state: tensor
             2d Tensor [batch_size x (number of decoder layers * hidden_layer_size * 2)] if LSTM or
             [batch_size x (number of decoder layers * hidden_layer_size)] if GRU representing the initial
                 state (usually, we take the states of the encoder) to be used when running the decoder. The '2' on
                 the LSTM formula mean that we have to set the hidden state and the cell state.
+
     attention_states: tensor
             3D tensor [batch_size x attn_length (time) x attn_size (hidden_layer_size)] representing the encoder
                 hidden states that will be used to derive the context (attention) vector.
+
     cell: RNNCell
             rnn_cell.RNNCell defining the cell function and size.
+
     batch_size: tensor
             tensor representing the batch size used when training the model
+
     attention_f: function
             function indicating which type of attention to use. Default to global_attention.
+
     loop_function:
             if not None, this function will be applied to i-th output
                 in order to generate i+1-th input, and decoder_inputs will be ignored,
@@ -765,18 +850,25 @@ def attention_decoder_nmt(decoder_inputs, initial_state, attention_states, cell,
                 * prev is a 2D Tensor of shape [batch_size x cell.output_size],
                 * i is an integer, the step number (when advanced control is needed),
                 * next is a 2D Tensor of shape [batch_size x cell.input_size].
+
     window_size: int
             size of the window to apply on local attention.Default to 10.
+
     input_feeding : boolean
             Flag indicating where to use the "input feeding approach" proposed by Luong et al. (2015).
                 Default to False.
+
     content_function: string
+
     dtype:
             The dtype to use for the RNN initial state (default: tf.float32).
+
     scope:
             VariableScope for the created subgraph; default: "attention_decoder".
+
     Returns
     -------
+
     outputs:
             A list of the same length as decoder_inputs of 2D Tensors of shape
                 [batch_size x output_size]. These represent the generated outputs.
@@ -788,10 +880,12 @@ def attention_decoder_nmt(decoder_inputs, initial_state, attention_states, cell,
                     new_attn = softmax(V^T * tanh(W * attention_states + U * new_state))
                 and then we calculate the output:
                     output = linear(cell_output, new_attn).
+
     states:
             The state of each decoder cell in each time-step. This is a list
                 with length len(decoder_inputs) -- one item for each time-step.
                 Each item is a 2D Tensor of shape [batch_size x cell.state_size].
+
     """
     assert attention_f is not None
 

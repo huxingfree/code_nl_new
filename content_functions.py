@@ -164,4 +164,6 @@ def vinyals_kaiser(hidden, decoder_hidden_state, initializer=None):
 
         # Attention mask is a softmax of v^T * tanh(...).
         s = math_ops.reduce_sum(va * math_ops.tanh(hidden_features + y), [2, 3])
+
     return s
+
